@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&#32227;&#20998;&#31844;&#35433;</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="phone-shell" aria-label="&#32227;&#20998;&#31844;&#35433;&#25163;&#27231;&#32178;&#38913;">
+    <section class="screen home-screen active" id="homeScreen">
+      <div class="corner-flower corner-flower-top" aria-hidden="true"></div>
+      <div class="corner-flower corner-flower-bottom" aria-hidden="true"></div>
+
+      <div class="brand">
+        <p class="brand-mark">&#32227;<br>&#20998;<br>&#31844;<br>&#35433;</p>
+        <p class="tagline">&#20197;&#20632;&#21839;&#24515;&#12539;&#20197;&#32011;&#21892;&#32227;</p>
+      </div>
+
+      <img class="home-umbrella" src="home-umbrella.png" alt="" aria-hidden="true">
+
+      <button class="start-button" id="startButton" type="button">
+        <img class="umbrella-icon" src="button-umbrella.png" alt="" aria-hidden="true">
+        &#38283;&#22987;&#39636;&#39511;
+      </button>
+
+      <img class="seal" src="seal-yuan.png" alt="" aria-hidden="true">
+      <div class="mountains" aria-hidden="true"></div>
+    </section>
+
+    <section class="screen question-screen" id="questionScreen" aria-label="&#23531;&#19979;&#20320;&#30340;&#21839;&#38988;">
+      <header class="question-header">
+        <button class="icon-button" id="backButton" type="button" aria-label="&#36820;&#22238;&#39318;&#38913;"></button>
+        <h1>&#23531;&#19979;&#20320;&#30340;&#21839;&#38988;</h1>
+        <span class="flower-icon" aria-hidden="true"></span>
+      </header>
+
+      <label class="question-card" for="questionInput">
+        <textarea id="questionInput" maxlength="100" placeholder="&#35531;&#36664;&#20837;&#20320;&#24819;&#21839;&#30340;&#21839;&#38988;...&#10;&#65288;&#20363;&#22914;&#65306;&#25105;&#20497;&#36996;&#33021;&#32380;&#32396;&#36208;&#19979;&#21435;&#21966;&#65311;&#65289;"></textarea>
+        <span class="count"><span id="charCount">0</span>/100</span>
+      </label>
+
+      <section class="field-group" aria-label="&#38364;&#20418;&#39006;&#22411;">
+        <h2>&#38364;&#20418;&#39006;&#22411;</h2>
+        <div class="relationship-options">
+          <button class="pill active" type="button">&#24859;&#24773;</button>
+          <button class="pill" type="button">&#21451;&#24773;</button>
+          <button class="pill" type="button">&#23478;&#24237;</button>
+          <button class="pill" type="button">&#20154;&#38555;</button>
+        </div>
+      </section>
+
+      <section class="journal-panel" aria-label="&#35426;&#21839;&#36913;&#35352;">
+        <div class="journal-heading">
+          <h2>&#35426;&#21839;&#36913;&#35352;</h2>
+          <span>&#32000;&#37636;&#20320;&#30340;&#35426;&#21839;&#32000;&#37636;</span>
+        </div>
+        <div class="journal-list" id="journalList"></div>
+      </section>
+
+      <button class="next-button" id="nextButton" type="button">&#19979;&#19968;&#27493;</button>
+    </section>
+
+    <section class="screen guidance-screen" id="guidanceScreen" aria-label="&#36681;&#21205;&#27833;&#32025;&#20632;">
+      <header class="guidance-header">
+        <button class="icon-button" id="guidanceBackButton" type="button" aria-label="&#36820;&#22238;&#25552;&#21839;&#38913;"></button>
+        <div class="guidance-title">
+          <h1>&#36681;&#21205;&#27833;&#32025;&#20632;</h1>
+          <p>&#38936;&#24917;&#20320;&#30340;&#32227;&#20998;&#25351;&#24341;</p>
+        </div>
+      </header>
+
+      <div class="umbrella-wheel" id="umbrellaWheel" role="img" aria-label="&#21487;&#24038;&#21491;&#28369;&#21205;&#26059;&#36681;&#30340;&#27833;&#32025;&#20632;">
+        <img class="umbrella-image umbrella-base-image" src="guidance-umbrella.png" alt="">
+        <img class="umbrella-image umbrella-result-image" id="umbrellaResultImage" alt="">
+      </div>
+
+      <div class="swipe-guide">
+        <p>&#35531;&#24038;&#21491;&#28369;&#21205;</p>
+        <div class="swipe-icons" aria-hidden="true">
+          <span class="arrow-left"></span>
+          <span class="arrow-right"></span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
