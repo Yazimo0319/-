@@ -17,12 +17,7 @@ const charCount = document.querySelector("#charCount");
 const journalList = document.querySelector("#journalList");
 const relationshipButtons = document.querySelectorAll(".pill");
 const emptyQuestionText = "\u5c1a\u672a\u8f38\u5165\u554f\u984c";
-const sampleQuestions = [
-  "\u6211\u5011\u6700\u8fd1\u7684\u8ddd\u96e2\u9084\u6709\u6a5f\u6703\u9760\u8fd1\u55ce\uff1f",
-  "\u9019\u6bb5\u95dc\u4fc2\u4e0b\u4e00\u6b65\u9069\u5408\u4e3b\u52d5\u55ce\uff1f",
-  "\u6211\u8a72\u5982\u4f55\u6574\u7406\u73fe\u5728\u7684\u5fc3\u60c5\uff1f",
-];
-const sampleTypes = ["\u611b\u60c5", "\u53cb\u60c5", "\u5bb6\u5ead"];
+const journalStorageKey = "fate-poem-journal-v1";
 const umbrellaResults = [
   {
     name: "\u7559\u767d",
@@ -70,6 +65,9 @@ let settleTimer = 0;
 let readingTimer = 0;
 let lastSpinDirection = 1;
 let currentUmbrellaResult = null;
+let currentReadingSaved = false;
+let motionListenerEnabled = false;
+let lastMotionTriggerTime = 0;
 
 function getSelectedRelationship() {
   return document.querySelector(".pill.active")?.textContent.trim() || "\u554f";
@@ -88,18 +86,29 @@ function updateTodayJournal() {
   icon.textContent = question ? getSelectedRelationship() : "\u554f";
 }
 
+function resetQuestionForm() {
+  questionInput.value = "";
+  charCount.textContent = "0";
+  relationshipButtons.forEach((item, index) => {
+    item.classList.toggle("active", index === 0);
+  });
+  renderJournalList();
+}
+
 function showScreen(screenName) {
   homeScreen.classList.toggle("active", screenName === "home");
   questionScreen.classList.toggle("active", screenName === "question");
   guidanceScreen.classList.toggle("active", screenName === "guidance");
 
   if (screenName === "question") {
+    renderJournalList();
     questionInput.focus();
   }
 
   if (screenName === "guidance") {
     resetUmbrellaResult();
     setUmbrellaRotation(0);
+    enableMotionDetection();
   }
 }
 
@@ -122,6 +131,7 @@ guidanceBackButton.addEventListener("click", () => {
 homeReturnButton.addEventListener("click", () => {
   resetUmbrellaResult();
   setUmbrellaRotation(0);
+  resetQuestionForm();
   showScreen("home");
 });
 
@@ -155,10 +165,45 @@ function resetUmbrellaResult() {
   readingSummary.textContent = "";
   readingReminder.textContent = "";
   currentUmbrellaResult = null;
+  currentReadingSaved = false;
 }
 
 function pickUmbrellaResult() {
   return umbrellaResults[Math.floor(Math.random() * umbrellaResults.length)];
+}
+
+function canStartUmbrellaSpin() {
+  return guidanceScreen.classList.contains("active")
+    && !isDraggingUmbrella
+    && !umbrellaWheel.classList.contains("spinning")
+    && !umbrellaWheel.classList.contains("settling")
+    && !umbrellaWheel.classList.contains("result-visible")
+    && !guidanceScreen.classList.contains("reading-open");
+}
+
+function startUmbrellaSpin(direction) {
+  if (!canStartUmbrellaSpin()) {
+    return;
+  }
+
+  const spinEnd = umbrellaRotation + direction * 900;
+  const selectedResult = pickUmbrellaResult();
+
+  currentUmbrellaResult = selectedResult;
+  currentReadingSaved = false;
+  lastSpinDirection = direction;
+  umbrellaResultImage.src = selectedResult.src;
+  umbrellaResultImage.alt = selectedResult.name;
+  umbrellaWheel.style.setProperty("--umbrella-rotation-start", `${umbrellaRotation}deg`);
+  umbrellaWheel.style.setProperty("--umbrella-rotation-end", `${spinEnd}deg`);
+  umbrellaWheel.classList.remove("spinning");
+  void umbrellaWheel.offsetWidth;
+  umbrellaWheel.classList.add("spinning");
+  revealTimer = window.setTimeout(() => {
+    umbrellaWheel.classList.add("revealing");
+  }, 520);
+  umbrellaRotation = spinEnd;
+  umbrellaWheel.style.setProperty("--umbrella-rotation", `${umbrellaRotation}deg`);
 }
 
 function openReadingPanel(result) {
@@ -166,6 +211,7 @@ function openReadingPanel(result) {
   readingSummary.textContent = result.summary;
   readingReminder.textContent = result.reminder;
   guidanceScreen.classList.add("reading-open");
+  saveCurrentReading(result);
 }
 
 function getNextUprightRotation(fromDegrees, direction) {
@@ -182,6 +228,10 @@ function getNextUprightRotation(fromDegrees, direction) {
 }
 
 umbrellaWheel.addEventListener("pointerdown", (event) => {
+  if (!canStartUmbrellaSpin() && !umbrellaWheel.classList.contains("result-visible")) {
+    return;
+  }
+
   isDraggingUmbrella = true;
   dragStartX = event.clientX;
   dragStartRotation = umbrellaRotation;
@@ -209,23 +259,7 @@ function finishUmbrellaDrag(event) {
 
   const distance = event.clientX - dragStartX;
   const direction = distance >= 0 ? 1 : -1;
-  const spinEnd = umbrellaRotation + direction * 900;
-  const selectedResult = pickUmbrellaResult();
-
-  currentUmbrellaResult = selectedResult;
-  lastSpinDirection = direction;
-  umbrellaResultImage.src = selectedResult.src;
-  umbrellaResultImage.alt = selectedResult.name;
-  umbrellaWheel.style.setProperty("--umbrella-rotation-start", `${umbrellaRotation}deg`);
-  umbrellaWheel.style.setProperty("--umbrella-rotation-end", `${spinEnd}deg`);
-  umbrellaWheel.classList.remove("spinning");
-  void umbrellaWheel.offsetWidth;
-  umbrellaWheel.classList.add("spinning");
-  revealTimer = window.setTimeout(() => {
-    umbrellaWheel.classList.add("revealing");
-  }, 520);
-  umbrellaRotation = spinEnd;
-  umbrellaWheel.style.setProperty("--umbrella-rotation", `${umbrellaRotation}deg`);
+  startUmbrellaSpin(direction);
 
   if (umbrellaWheel.hasPointerCapture(event.pointerId)) {
     umbrellaWheel.releasePointerCapture(event.pointerId);
@@ -268,6 +302,113 @@ umbrellaWheel.addEventListener("lostpointercapture", () => {
   umbrellaWheel.classList.remove("dragging");
 });
 
+function handleDeviceMotion(event) {
+  if (!canStartUmbrellaSpin()) {
+    return;
+  }
+
+  const now = Date.now();
+
+  if (now - lastMotionTriggerTime < 2600) {
+    return;
+  }
+
+  const acceleration = event.acceleration || event.accelerationIncludingGravity || {};
+  const rotationRate = event.rotationRate || {};
+  const x = acceleration.x || 0;
+  const y = acceleration.y || 0;
+  const z = acceleration.z || 0;
+  const motionStrength = Math.abs(x) + Math.abs(y) + Math.abs(z);
+  const rotationStrength = Math.abs(rotationRate.alpha || 0)
+    + Math.abs(rotationRate.beta || 0)
+    + Math.abs(rotationRate.gamma || 0);
+
+  if (motionStrength < 18 && rotationStrength < 180) {
+    return;
+  }
+
+  lastMotionTriggerTime = now;
+  const direction = x >= 0 ? 1 : -1;
+  resetUmbrellaResult();
+  setUmbrellaRotation(umbrellaRotation + direction * 64);
+  startUmbrellaSpin(direction);
+}
+
+async function enableMotionDetection() {
+  if (motionListenerEnabled || typeof window.DeviceMotionEvent === "undefined") {
+    return;
+  }
+
+  try {
+    if (typeof window.DeviceMotionEvent.requestPermission === "function") {
+      const permission = await window.DeviceMotionEvent.requestPermission();
+
+      if (permission !== "granted") {
+        return;
+      }
+    }
+
+    window.addEventListener("devicemotion", handleDeviceMotion, { passive: true });
+    motionListenerEnabled = true;
+  } catch {
+    // Some browsers expose DeviceMotionEvent but reject permission calls silently.
+  }
+}
+
+function getJournalRecords() {
+  try {
+    const records = JSON.parse(localStorage.getItem(journalStorageKey) || "[]");
+    return Array.isArray(records) ? records : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveJournalRecords(records) {
+  localStorage.setItem(journalStorageKey, JSON.stringify(records.slice(0, 60)));
+}
+
+function formatDateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function saveCurrentReading(result) {
+  const question = questionInput.value.trim();
+
+  if (!question || currentReadingSaved) {
+    return;
+  }
+
+  const now = new Date();
+  const records = getJournalRecords();
+  records.unshift({
+    id: `${Date.now()}`,
+    date: formatDateKey(now),
+    timestamp: now.toISOString(),
+    type: getSelectedRelationship(),
+    question,
+    result: result.name,
+    summary: result.summary,
+    reminder: result.reminder,
+  });
+  saveJournalRecords(records);
+  currentReadingSaved = true;
+}
+
+function groupRecordsByDate(records) {
+  return records.reduce((groups, record) => {
+    if (!groups.has(record.date)) {
+      groups.set(record.date, []);
+    }
+
+    groups.get(record.date).push(record);
+    return groups;
+  }, new Map());
+}
+
 function renderJournalList() {
   const today = new Date();
   const dateFormatter = new Intl.DateTimeFormat("zh-TW", {
@@ -277,11 +418,48 @@ function renderJournalList() {
   const weekdayFormatter = new Intl.DateTimeFormat("zh-TW", {
     weekday: "short",
   });
+  const records = getJournalRecords();
+  const groupedRecords = groupRecordsByDate(records);
 
-  for (let offset = 0; offset < 4; offset += 1) {
-    const date = new Date(today);
-    date.setDate(today.getDate() - offset);
-    const isToday = offset === 0;
+  journalList.innerHTML = "";
+
+  if (records.length === 0) {
+    const emptyState = document.createElement("article");
+    emptyState.className = "journal-day today";
+
+    const header = document.createElement("div");
+    header.className = "journal-day-header";
+
+    const dateText = document.createElement("span");
+    dateText.textContent = `${dateFormatter.format(today)} ${weekdayFormatter.format(today)}`;
+
+    const countText = document.createElement("strong");
+    countText.textContent = "\u4eca\u65e5";
+
+    header.append(dateText, countText);
+
+    const record = document.createElement("div");
+    record.className = "journal-entry";
+
+    const icon = document.createElement("span");
+    icon.className = "journal-entry-icon";
+    icon.id = "todayJournalIcon";
+    icon.textContent = "\u554f";
+
+    const text = document.createElement("p");
+    text.id = "todayJournalText";
+    text.textContent = emptyQuestionText;
+
+    record.append(icon, text);
+    emptyState.append(header, record);
+    journalList.append(emptyState);
+    updateTodayJournal();
+    return;
+  }
+
+  groupedRecords.forEach((dayRecords, dateKey) => {
+    const date = new Date(`${dateKey}T00:00:00`);
+    const isToday = dateKey === formatDateKey(today);
 
     const group = document.createElement("article");
     group.className = "journal-day";
@@ -297,29 +475,28 @@ function renderJournalList() {
     dateText.textContent = `${dateFormatter.format(date)} ${weekdayFormatter.format(date)}`;
 
     const countText = document.createElement("strong");
-    countText.textContent = isToday ? "\u4eca\u65e5" : "1 \u7b46";
+    countText.textContent = isToday ? "\u4eca\u65e5" : `${dayRecords.length} \u7b46`;
 
     header.append(dateText, countText);
 
-    const record = document.createElement("div");
-    record.className = "journal-entry";
+    dayRecords.forEach((journalRecord) => {
+      const record = document.createElement("div");
+      record.className = "journal-entry";
 
-    const icon = document.createElement("span");
-    icon.className = "journal-entry-icon";
-    icon.textContent = isToday ? "\u554f" : sampleTypes[offset - 1];
+      const icon = document.createElement("span");
+      icon.className = "journal-entry-icon";
+      icon.textContent = journalRecord.type || "\u554f";
 
-    const text = document.createElement("p");
-    text.textContent = isToday ? emptyQuestionText : sampleQuestions[offset - 1];
+      const text = document.createElement("p");
+      text.textContent = journalRecord.question || emptyQuestionText;
 
-    if (isToday) {
-      icon.id = "todayJournalIcon";
-      text.id = "todayJournalText";
-    }
+      record.append(icon, text);
+      group.append(record);
+    });
 
-    record.append(icon, text);
-    group.append(header, record);
+    group.prepend(header);
     journalList.append(group);
-  }
+  });
 }
 
 renderJournalList();
