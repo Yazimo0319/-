@@ -15,14 +15,14 @@
 html,
 body {
   width: 100%;
-  min-height: 100%;
-  overflow-x: hidden;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   background: var(--paper);
   color: var(--ink);
   font-family: "Noto Serif TC", "PMingLiU", serif;
@@ -38,13 +38,24 @@ button {
 
 .screen.active {
   display: block;
+  animation: screenReveal 420ms ease both;
+}
+
+@keyframes screenReveal {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .phone-shell {
   width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
-  overflow-x: hidden;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   padding: 0;
 }
 
@@ -53,8 +64,8 @@ button {
   isolation: isolate;
   overflow: hidden;
   width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   border: 0;
   border-radius: 0;
   background: var(--paper) url("%E5%9C%96%E7%89%87/home-background.png") center / cover no-repeat;
@@ -66,8 +77,8 @@ button {
   position: relative;
   overflow: auto;
   width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   padding: calc(22px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom));
   border: 0;
   border-radius: 0;
@@ -229,6 +240,15 @@ button {
   border-radius: 0;
   background: url("%E5%9C%96%E7%89%87/question-frame.png") center / 100% 100% no-repeat;
   box-shadow: none;
+  filter: drop-shadow(0 10px 18px rgba(20, 52, 101, 0.06));
+  transition: filter 240ms ease, transform 240ms ease;
+}
+
+.question-card:focus-within {
+  filter:
+    drop-shadow(0 12px 18px rgba(20, 52, 101, 0.09))
+    drop-shadow(0 0 10px rgba(70, 118, 172, 0.12));
+  transform: translateY(-1px);
 }
 
 .question-card textarea {
@@ -250,6 +270,8 @@ button {
 
 .question-card textarea::placeholder {
   color: rgba(20, 52, 101, 0.42);
+  font-size: 0.9em;
+  line-height: 1.55;
 }
 
 .count {
@@ -292,11 +314,25 @@ button {
   font-size: 0.98rem;
   font-weight: 900;
   letter-spacing: 0;
+  transition: filter 180ms ease, transform 180ms ease;
 }
 
 .pill.active {
   background: url("%E5%9C%96%E7%89%87/relationship-active.png") center / 100% 100% no-repeat;
   color: #fff8ef;
+}
+
+.pill:hover,
+.pill:focus-visible {
+  filter: brightness(0.98) drop-shadow(0 4px 8px rgba(20, 52, 101, 0.1));
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.pill:active,
+.next-button:active,
+.home-return-button:active {
+  transform: translateY(1px);
 }
 
 .journal-panel {
@@ -329,8 +365,8 @@ button {
 .journal-list {
   display: grid;
   gap: 10px;
-  max-height: 210px;
-  overflow: auto;
+  max-height: none;
+  overflow: visible;
   padding-right: 2px;
 }
 
@@ -339,6 +375,20 @@ button {
   border: 1.5px solid rgba(29, 71, 122, 0.38);
   border-radius: 8px;
   background: rgba(255, 251, 244, 0.82);
+  animation: cardRise 360ms ease both;
+  box-shadow: 0 8px 14px rgba(20, 52, 101, 0.06);
+}
+
+@keyframes cardRise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .journal-day-header {
@@ -446,14 +496,19 @@ button {
   letter-spacing: 0;
   box-shadow: 0 12px 24px rgba(20, 52, 101, 0.2);
   transform: translateX(-50%);
-  transition: transform 180ms ease, filter 180ms ease;
+  transition: transform 180ms ease, filter 180ms ease, box-shadow 180ms ease;
 }
 
 .next-button:hover,
 .next-button:focus-visible {
   filter: brightness(0.96);
+  box-shadow: 0 16px 26px rgba(20, 52, 101, 0.24);
   transform: translateX(-50%) translateY(-2px);
   outline: none;
+}
+
+.next-button:active {
+  transform: translateX(-50%) translateY(1px);
 }
 
 .umbrella-wheel {
@@ -626,6 +681,15 @@ button {
   font-size: 1rem;
   font-weight: 900;
   letter-spacing: 0;
+  transition: filter 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.home-return-button:hover,
+.home-return-button:focus-visible {
+  filter: brightness(0.96);
+  box-shadow: 0 10px 18px rgba(20, 52, 101, 0.16);
+  transform: translateY(-1px);
+  outline: none;
 }
 
 .guidance-screen.reading-open .umbrella-wheel {
@@ -832,8 +896,8 @@ button {
 
 @media (max-width: 380px) {
   .phone-shell {
-    min-height: 100vh;
-    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     padding: 0;
   }
 
@@ -995,10 +1059,6 @@ button {
     margin-bottom: 8px;
   }
 
-  .journal-list {
-    max-height: 174px;
-  }
-
   .next-button {
     bottom: calc(14px + env(safe-area-inset-bottom));
     min-height: 46px;
@@ -1083,6 +1143,18 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .screen.active,
+  .journal-day {
+    animation: none;
+  }
+
+  .question-card,
+  .pill,
+  .next-button,
+  .home-return-button {
+    transition: none;
+  }
+
   .home-umbrella {
     animation: none;
   }
