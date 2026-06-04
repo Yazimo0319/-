@@ -19,12 +19,12 @@ const sampleQuestions = [
 ];
 const sampleTypes = ["\u611b\u60c5", "\u53cb\u60c5", "\u5bb6\u5ead"];
 const umbrellaResults = [
-  { name: "\u7559\u767d", src: "result-liubai.png" },
-  { name: "\u56de\u98a8", src: "result-huifeng.png" },
-  { name: "\u5171\u5098", src: "result-gongsan.png" },
-  { name: "\u5fae\u88c2", src: "result-weilie.png" },
-  { name: "\u96e8\u505c", src: "result-yuting.png" },
-  { name: "\u4e26\u884c", src: "result-bingxing.png" },
+  { name: "\u7559\u767d", src: "\u5716\u7247/result-liubai.png" },
+  { name: "\u56de\u98a8", src: "\u5716\u7247/result-huifeng.png" },
+  { name: "\u5171\u5098", src: "\u5716\u7247/result-gongsan.png" },
+  { name: "\u5fae\u88c2", src: "\u5716\u7247/result-weilie.png" },
+  { name: "\u96e8\u505c", src: "\u5716\u7247/result-yuting.png" },
+  { name: "\u4e26\u884c", src: "\u5716\u7247/result-bingxing.png" },
 ];
 let umbrellaRotation = 0;
 let dragStartX = 0;

@@ -56,7 +56,7 @@ button {
   height: 100%;
   border: 1.5px solid var(--line);
   border-radius: 22px;
-  background: var(--paper) url("home-background.png") center / cover no-repeat;
+  background: var(--paper) url("圖片/home-background.png") center / cover no-repeat;
   box-shadow: 0 22px 60px var(--shadow);
 }
 
