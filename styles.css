@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --ink: #1d477a;
   --ink-deep: #143465;
   --ink-soft: rgba(29, 71, 122, 0.58);
@@ -68,7 +68,7 @@ button {
   height: 100dvh;
   border: 0;
   border-radius: 0;
-  background: var(--paper) url("%E5%9C%96%E7%89%87/home-background.png") center / cover no-repeat;
+  background: var(--paper) url("%E5%9C%96%E7%89%87/home-background.webp") center / cover no-repeat;
   box-shadow: none;
 }
 
@@ -92,12 +92,12 @@ button {
 }
 
 .question-screen {
-  background: var(--paper) url("%E5%9C%96%E7%89%87/home-background.png") center / cover no-repeat;
+  background: var(--paper) url("%E5%9C%96%E7%89%87/home-background.webp") center / cover no-repeat;
   padding-bottom: calc(126px + env(safe-area-inset-bottom));
 }
 
 .guidance-screen {
-  background: var(--paper) url("%E5%9C%96%E7%89%87/home-background.png") center / cover no-repeat;
+  background: var(--paper) url("%E5%9C%96%E7%89%87/home-background.webp") center / cover no-repeat;
   overflow: hidden;
   overscroll-behavior: none;
 }
@@ -238,7 +238,7 @@ button {
   min-height: 0;
   border: 0;
   border-radius: 0;
-  background: url("%E5%9C%96%E7%89%87/question-frame.png") center / 100% 100% no-repeat;
+  background: url("%E5%9C%96%E7%89%87/question-frame.webp") center / 100% 100% no-repeat;
   box-shadow: none;
   filter: drop-shadow(0 10px 18px rgba(20, 52, 101, 0.06));
   transition: filter 240ms ease, transform 240ms ease;
@@ -309,7 +309,7 @@ button {
   padding: 0 14px;
   border: 0;
   border-radius: 0;
-  background: url("%E5%9C%96%E7%89%87/relationship-idle.png") center / 100% 100% no-repeat;
+  background: url("%E5%9C%96%E7%89%87/relationship-idle.webp") center / 100% 100% no-repeat;
   color: var(--ink-deep);
   font-size: 0.98rem;
   font-weight: 900;
@@ -318,7 +318,7 @@ button {
 }
 
 .pill.active {
-  background: url("%E5%9C%96%E7%89%87/relationship-active.png") center / 100% 100% no-repeat;
+  background: url("%E5%9C%96%E7%89%87/relationship-active.webp") center / 100% 100% no-repeat;
   color: #fff8ef;
 }
 
@@ -625,7 +625,7 @@ button {
   padding: 42px 34px 28px;
   border: 0;
   border-radius: 0;
-  background: url("%E5%9C%96%E7%89%87/reading-frame.png") center / 100% 100% no-repeat;
+  background: url("%E5%9C%96%E7%89%87/reading-frame.webp") center / 100% 100% no-repeat;
   box-shadow: none;
   color: var(--ink-deep);
   opacity: 0;

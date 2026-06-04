@@ -1,4 +1,4 @@
-const homeScreen = document.querySelector("#homeScreen");
+﻿const homeScreen = document.querySelector("#homeScreen");
 const questionScreen = document.querySelector("#questionScreen");
 const guidanceScreen = document.querySelector("#guidanceScreen");
 const startButton = document.querySelector("#startButton");
@@ -21,37 +21,37 @@ const journalStorageKey = "fate-poem-journal-v1";
 const umbrellaResults = [
   {
     name: "\u7559\u767d",
-    src: "%E5%9C%96%E7%89%87/result-liubai.png",
+    src: "%E5%9C%96%E7%89%87/result-liubai.webp",
     summary: "\u73fe\u5728\u4e0d\u5fc5\u6025\u8457\u6c7a\u5b9a\uff0c\u8b93\u7b54\u6848\u5728\u6642\u9593\u88e1\u6162\u6162\u6d6e\u73fe\u3002",
     reminder: "\u4e0d\u5fc5\u6025\u8457\u586b\u6eff\u6240\u6709\u7a7a\u767d\uff0c\u7559\u4e00\u9ede\u4f4d\u7f6e\u7d66\u6642\u9593\u3002",
   },
   {
     name: "\u56de\u98a8",
-    src: "%E5%9C%96%E7%89%87/result-huifeng.png",
+    src: "%E5%9C%96%E7%89%87/result-huifeng.webp",
     summary: "\u904e\u53bb\u53ef\u80fd\u518d\u6b21\u51fa\u73fe\uff0c\u4f46\u4f60\u5df2\u7d93\u64c1\u6709\u4e0d\u540c\u7684\u9078\u64c7\u3002",
     reminder: "\u98a8\u5439\u56de\u820a\u65e5\u7684\u75d5\u8de1\uff0c\u662f\u70ba\u4e86\u8b93\u4f60\u770b\u6e05\u73fe\u5728\u7684\u81ea\u5df1\u3002",
   },
   {
     name: "\u5171\u5098",
-    src: "%E5%9C%96%E7%89%87/result-gongsan.png",
+    src: "%E5%9C%96%E7%89%87/result-gongsan.webp",
     summary: "\u6709\u4eba\u9858\u610f\u9760\u8fd1\u4f60\uff0c\u4e5f\u53ef\u80fd\u662f\u4f60\u8a72\u4e3b\u52d5\u5411\u524d\u4e00\u6b65\u3002",
     reminder: "\u7de3\u5206\u9700\u8981\u56de\u61c9\uff0c\u4e5f\u9700\u8981\u6709\u4eba\u5148\u6490\u958b\u90a3\u628a\u5098\u3002",
   },
   {
     name: "\u5fae\u88c2",
-    src: "%E5%9C%96%E7%89%87/result-weilie.png",
+    src: "%E5%9C%96%E7%89%87/result-weilie.webp",
     summary: "\u7d30\u5c0f\u88c2\u75d5\u4ecd\u53ef\u4fee\u88dc\uff0c\u9858\u610f\u7406\u89e3\u5c31\u662f\u91cd\u65b0\u9760\u8fd1\u7684\u958b\u59cb\u3002",
     reminder: "\u6709\u4e9b\u88c2\u7d0b\u4e0d\u662f\u7f3a\u9677\uff0c\u800c\u662f\u63d0\u9192\u4f60\u91cd\u65b0\u7406\u89e3\u5f7c\u6b64\u3002",
   },
   {
     name: "\u96e8\u505c",
-    src: "%E5%9C%96%E7%89%87/result-yuting.png",
+    src: "%E5%9C%96%E7%89%87/result-yuting.webp",
     summary: "\u4f4e\u6f6e\u5373\u5c07\u904e\u53bb\uff0c\u5148\u6574\u7406\u5fc3\u60c5\uff0c\u518d\u6162\u6162\u5411\u524d\u3002",
     reminder: "\u96e8\u505c\u4e4b\u5f8c\uff0c\u4e0d\u5fc5\u6025\u8457\u8d95\u8def\uff0c\u5148\u62ac\u982d\u770b\u770b\u5929\u8272\u3002",
   },
   {
     name: "\u4e26\u884c",
-    src: "%E5%9C%96%E7%89%87/result-bingxing.png",
+    src: "%E5%9C%96%E7%89%87/result-bingxing.webp",
     summary: "\u95dc\u4fc2\u6b63\u5728\u9760\u8fd1\uff0c\u4e0d\u9700\u8981\u50ac\u4fc3\uff0c\u53ea\u8981\u4fdd\u6301\u771f\u8aa0\u7684\u6b65\u4f10\u3002",
     reminder: "\u771f\u6b63\u9069\u5408\u7684\u6b65\u4f10\uff0c\u4e0d\u9700\u8981\u8ffd\u8d95\uff0c\u4e5f\u4e0d\u5fc5\u523b\u610f\u505c\u7559\u3002",
   },
@@ -68,6 +68,42 @@ let currentUmbrellaResult = null;
 let currentReadingSaved = false;
 let motionListenerEnabled = false;
 let lastMotionTriggerTime = 0;
+let deferredImagesPreloaded = false;
+
+const deferredImageSources = [
+  "%E5%9C%96%E7%89%87/back-button.webp",
+  "%E5%9C%96%E7%89%87/question-frame.webp",
+  "%E5%9C%96%E7%89%87/relationship-idle.webp",
+  "%E5%9C%96%E7%89%87/relationship-active.webp",
+  "%E5%9C%96%E7%89%87/guidance-umbrella.webp",
+  "%E5%9C%96%E7%89%87/reading-frame.webp",
+  ...umbrellaResults.map((result) => result.src),
+];
+
+function preloadImages(sources) {
+  sources.forEach((src) => {
+    const image = new Image();
+    image.src = src;
+  });
+}
+
+function preloadDeferredImages() {
+  if (deferredImagesPreloaded) {
+    return;
+  }
+
+  deferredImagesPreloaded = true;
+  preloadImages(deferredImageSources);
+}
+
+function scheduleDeferredImagePreload() {
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(preloadDeferredImages, { timeout: 1600 });
+    return;
+  }
+
+  window.setTimeout(preloadDeferredImages, 700);
+}
 
 function getSelectedRelationship() {
   return document.querySelector(".pill.active")?.textContent.trim() || "\u554f";
@@ -113,6 +149,7 @@ function showScreen(screenName) {
 }
 
 startButton.addEventListener("click", () => {
+  preloadDeferredImages();
   showScreen("question");
 });
 
@@ -121,6 +158,7 @@ backButton.addEventListener("click", () => {
 });
 
 nextButton.addEventListener("click", () => {
+  preloadDeferredImages();
   showScreen("guidance");
 });
 
@@ -508,3 +546,4 @@ function renderJournalList() {
 }
 
 renderJournalList();
+scheduleDeferredImagePreload();
