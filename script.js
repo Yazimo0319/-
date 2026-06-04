@@ -487,10 +487,18 @@ function renderJournalList() {
       icon.className = "journal-entry-icon";
       icon.textContent = journalRecord.type || "\u554f";
 
+      const body = document.createElement("div");
+      body.className = "journal-entry-body";
+
       const text = document.createElement("p");
       text.textContent = journalRecord.question || emptyQuestionText;
 
-      record.append(icon, text);
+      const result = document.createElement("span");
+      result.className = "journal-result";
+      result.textContent = journalRecord.result ? `\u7d50\u679c\uff1a${journalRecord.result}` : "\u5c1a\u672a\u89e3\u7c64";
+
+      body.append(text, result);
+      record.append(icon, body);
       group.append(record);
     });
 
