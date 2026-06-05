@@ -25,7 +25,7 @@ body {
   height: 100dvh;
   background: var(--paper);
   color: var(--ink);
-  font-family: "Noto Serif TC", "PMingLiU", serif;
+  font-family: "Noto Serif TC", "Songti TC", "STSong", "PMingLiU", serif;
 }
 
 button {
@@ -342,8 +342,8 @@ button {
 .journal-heading {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: flex-start;
+  gap: 0;
   margin-bottom: 10px;
 }
 
@@ -519,11 +519,18 @@ button {
   aspect-ratio: 1;
   margin: 0;
   border-radius: 50%;
+  overflow: hidden;
+  contain: paint;
+  background: transparent;
+  -webkit-clip-path: circle(49.5% at 50% 50%);
+  clip-path: circle(49.5% at 50% 50%);
   cursor: grab;
   touch-action: none;
   user-select: none;
   filter: drop-shadow(0 18px 30px rgba(20, 52, 101, 0.12));
   transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
   transition: top 900ms cubic-bezier(0.16, 0.78, 0.2, 1), width 900ms cubic-bezier(0.16, 0.78, 0.2, 1), transform 900ms cubic-bezier(0.16, 0.78, 0.2, 1);
 }
 
@@ -539,7 +546,12 @@ button {
   height: 100%;
   object-fit: contain;
   opacity: 1;
-  transform: rotate(var(--umbrella-rotation, 0deg));
+  -webkit-clip-path: circle(49.5% at 50% 50%);
+  clip-path: circle(49.5% at 50% 50%);
+  transform: translateZ(0) rotate(var(--umbrella-rotation, 0deg));
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
   transition: opacity 1100ms ease, transform 180ms ease-out, filter 1100ms ease;
   pointer-events: none;
 }
@@ -574,11 +586,11 @@ button {
 
 @keyframes umbrellaSpin {
   from {
-    transform: rotate(var(--umbrella-rotation-start, 0deg));
+    transform: translateZ(0) rotate(var(--umbrella-rotation-start, 0deg));
   }
 
   to {
-    transform: rotate(var(--umbrella-rotation-end, 720deg));
+    transform: translateZ(0) rotate(var(--umbrella-rotation-end, 720deg));
   }
 }
 

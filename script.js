@@ -68,6 +68,9 @@ let currentUmbrellaResult = null;
 let currentReadingSaved = false;
 let motionListenerEnabled = false;
 let lastMotionTriggerTime = 0;
+let lastShakeDirection = 0;
+let lastShakeTime = 0;
+let shakeTurnCount = 0;
 let deferredImagesPreloaded = false;
 
 const deferredImageSources = [
@@ -129,6 +132,24 @@ function resetQuestionForm() {
     item.classList.toggle("active", index === 0);
   });
   renderJournalList();
+}
+
+function getWeekStartKey(date) {
+  const weekStart = new Date(date);
+  weekStart.setHours(0, 0, 0, 0);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+  return formatDateKey(weekStart);
+}
+
+function cleanupJournalForCurrentWeek() {
+  const today = new Date();
+  const weekStartKey = getWeekStartKey(today);
+  const records = getJournalRecords();
+  const currentWeekRecords = records.filter((record) => record.date >= weekStartKey);
+
+  if (currentWeekRecords.length !== records.length) {
+    saveJournalRecords(currentWeekRecords);
+  }
 }
 
 function showScreen(screenName) {
@@ -266,7 +287,7 @@ function getNextUprightRotation(fromDegrees, direction) {
 }
 
 umbrellaWheel.addEventListener("pointerdown", (event) => {
-  if (!canStartUmbrellaSpin() && !umbrellaWheel.classList.contains("result-visible")) {
+  if (!canStartUmbrellaSpin()) {
     return;
   }
 
@@ -361,12 +382,35 @@ function handleDeviceMotion(event) {
     + Math.abs(rotationRate.beta || 0)
     + Math.abs(rotationRate.gamma || 0);
 
-  if (motionStrength < 18 && rotationStrength < 180) {
+  if (motionStrength < 16 && rotationStrength < 150) {
     return;
   }
 
+  const directionSource = Math.abs(x) >= Math.abs(y) ? x : y;
+  const direction = directionSource >= 0 ? 1 : -1;
+
+  if (now - lastShakeTime > 1800) {
+    shakeTurnCount = 0;
+    lastShakeDirection = 0;
+  }
+
+  if (now - lastShakeTime < 180) {
+    return;
+  }
+
+  if (lastShakeDirection !== 0 && direction !== lastShakeDirection) {
+    shakeTurnCount += 1;
+  }
+
+  lastShakeDirection = direction;
+  lastShakeTime = now;
+
+  if (shakeTurnCount < 2) {
+    return;
+  }
+
+  shakeTurnCount = 0;
   lastMotionTriggerTime = now;
-  const direction = x >= 0 ? 1 : -1;
   resetUmbrellaResult();
   setUmbrellaRotation(umbrellaRotation + direction * 64);
   startUmbrellaSpin(direction);
@@ -545,5 +589,6 @@ function renderJournalList() {
   });
 }
 
+cleanupJournalForCurrentWeek();
 renderJournalList();
 scheduleDeferredImagePreload();
