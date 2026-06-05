@@ -159,7 +159,6 @@ function showScreen(screenName) {
 
   if (screenName === "question") {
     renderJournalList();
-    questionInput.focus();
   }
 
   if (screenName === "guidance") {
