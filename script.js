@@ -16,8 +16,10 @@ const questionInput = document.querySelector("#questionInput");
 const charCount = document.querySelector("#charCount");
 const journalList = document.querySelector("#journalList");
 const relationshipButtons = document.querySelectorAll(".pill");
+const backgroundMusic = document.querySelector("#backgroundMusic");
 const emptyQuestionText = "\u5c1a\u672a\u8f38\u5165\u554f\u984c";
 const journalStorageKey = "fate-poem-journal-v1";
+const backgroundMusicVolume = 0.16;
 const umbrellaResults = [
   {
     name: "\u7559\u767d",
@@ -72,6 +74,8 @@ let lastShakeDirection = 0;
 let lastShakeTime = 0;
 let shakeTurnCount = 0;
 let deferredImagesPreloaded = false;
+let backgroundMusicStarted = false;
+let backgroundMusicFadeTimer = 0;
 
 const deferredImageSources = [
   "%E5%9C%96%E7%89%87/back-button.webp",
@@ -106,6 +110,40 @@ function scheduleDeferredImagePreload() {
   }
 
   window.setTimeout(preloadDeferredImages, 700);
+}
+
+function fadeInBackgroundMusic() {
+  window.clearInterval(backgroundMusicFadeTimer);
+
+  if (!backgroundMusic) {
+    return;
+  }
+
+  backgroundMusic.volume = 0;
+  backgroundMusicFadeTimer = window.setInterval(() => {
+    const nextVolume = Math.min(backgroundMusicVolume, backgroundMusic.volume + 0.015);
+    backgroundMusic.volume = nextVolume;
+
+    if (nextVolume >= backgroundMusicVolume) {
+      window.clearInterval(backgroundMusicFadeTimer);
+    }
+  }, 120);
+}
+
+async function startBackgroundMusic() {
+  if (!backgroundMusic || backgroundMusicStarted) {
+    return;
+  }
+
+  backgroundMusicStarted = true;
+  backgroundMusic.volume = 0;
+
+  try {
+    await backgroundMusic.play();
+    fadeInBackgroundMusic();
+  } catch {
+    backgroundMusicStarted = false;
+  }
 }
 
 function getSelectedRelationship() {
@@ -170,6 +208,7 @@ function showScreen(screenName) {
 
 startButton.addEventListener("click", () => {
   preloadDeferredImages();
+  startBackgroundMusic();
   showScreen("question");
 });
 
