@@ -20,7 +20,7 @@ const backgroundMusic = document.querySelector("#backgroundMusic");
 const emptyQuestionText = "\u5c1a\u672a\u8f38\u5165\u554f\u984c";
 const journalStorageKey = "fate-poem-journal-v1";
 const backgroundMusicVolume = 0.16;
-const backgroundMusicGestureEvents = ["pointerdown", "touchstart", "keydown"];
+const backgroundMusicGestureEvents = ["pointerdown", "touchstart", "click", "keydown"];
 const umbrellaResults = [
   {
     name: "\u7559\u767d",
@@ -77,6 +77,11 @@ let shakeTurnCount = 0;
 let deferredImagesPreloaded = false;
 let backgroundMusicStarted = false;
 let backgroundMusicFadeTimer = 0;
+let backgroundMusicGestureListenerActive = false;
+
+if (backgroundMusic) {
+  backgroundMusic.volume = 0;
+}
 
 const deferredImageSources = [
   "%E5%9C%96%E7%89%87/back-button.webp",
@@ -132,14 +137,23 @@ function fadeInBackgroundMusic() {
 }
 
 function removeBackgroundMusicGestureListeners() {
+  backgroundMusicGestureListenerActive = false;
   backgroundMusicGestureEvents.forEach((eventName) => {
-    document.removeEventListener(eventName, handleBackgroundMusicGesture);
+    document.removeEventListener(eventName, handleBackgroundMusicGesture, true);
   });
 }
 
 function addBackgroundMusicGestureListeners() {
+  if (backgroundMusicGestureListenerActive) {
+    return;
+  }
+
+  backgroundMusicGestureListenerActive = true;
   backgroundMusicGestureEvents.forEach((eventName) => {
-    document.addEventListener(eventName, handleBackgroundMusicGesture, { once: true, passive: true });
+    document.addEventListener(eventName, handleBackgroundMusicGesture, {
+      capture: true,
+      passive: true,
+    });
   });
 }
 
@@ -649,6 +663,8 @@ function renderJournalList() {
 cleanupJournalForCurrentWeek();
 renderJournalList();
 scheduleDeferredImagePreload();
+addBackgroundMusicGestureListeners();
+startBackgroundMusic();
 window.setTimeout(() => {
   startBackgroundMusic();
 }, 400);
